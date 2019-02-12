@@ -7,7 +7,7 @@ date: 2015/9/17 23:11:00
 
 ![](http://attimg.dospy.com/img/day_091110/20091110_4221bebbbe02945c71e0BN5BE87s8TT7.gif)   
 
-自己做了一个[demo](https://blog.shawnan.xyz/characterRainDemo.html)，顺便记录下这个实现过程。
+自己做了一个[demo](https://blog.shawnan.xyz/htmls/characterRainDemo.html)，顺便记录下这个实现过程。
 
 
 题目中给出了三小问，相当于给总体实现的思路。第一问是用来实现单个字符效果，第二问是生成长度随机的包含 “[0-9][a-z][A-Z]” 的字符串放入页面中，第三问是实现页面中随机出现第二问中随机生成的字符串，并实现下落效果。   

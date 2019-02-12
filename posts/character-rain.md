@@ -1,0 +1,147 @@
+---
+title: 黑客帝国字符雨效果实现
+date: 2015/9/17 23:11:00
+---
+
+今天在做大众点评的前端笔试题时，遇到了这个问题，让用HTML+CSS+JavaScript来实现黑客帝国中的字符雨效果，如下图：    
+
+![](http://attimg.dospy.com/img/day_091110/20091110_4221bebbbe02945c71e0BN5BE87s8TT7.gif)   
+
+自己做了一个[demo](https://blog.shawnan.xyz/characterRainDemo.html)，顺便记录下这个实现过程。
+
+
+题目中给出了三小问，相当于给总体实现的思路。第一问是用来实现单个字符效果，第二问是生成长度随机的包含 “[0-9][a-z][A-Z]” 的字符串放入页面中，第三问是实现页面中随机出现第二问中随机生成的字符串，并实现下落效果。   
+在做题的过程中，发现自己很多地方掌握的不够，很多细节记忆的不够清楚，不用 IDE 也很难写出完全正确的代码。   
+特此记录并总结一下，感觉这道题目考查的知识还是比较全面的。   
+首先，第一问的实现，没有采用题目中给出的背景图片的做法，而是采用颜色+文字阴影来实现。   
+这里需要注意的第一个问题是英文的断行问题，设置宽度固定后，中文的字符会自动换行，但是英文的一长串字符如果没有空格的话，会被认为是一个单词，所以不会自动换行。    
+此时需要用到 CSS3 的 word-break 属性，word-break 属性规定自动换行的处理方法。通过使用 word-break 属性，可以让浏览器实现在任意位置的换行。   
+语法：   
+
+    word-break: normal|break-all|keep-all; 
+    normal：使用浏览器默认的换行规则。
+    break-all：允许在单词内换行。
+    keep-all：只能在半角空格或连字符处换行。
+
+此处我们需要字符根据 div 的宽度来换行，则需要将 word-break 设置为 keep-all 。   
+与 word-break 类似的属性还有 word-wrap 。word-wrap 属性允许长单词或 URL 地址换行到下一行。
+语法：
+     
+    word-wrap: normal|break-word;
+    normal：只在允许的断字点换行（浏览器保持默认处理）。
+    break-word：在长单词或 URL 地址内部进行换行。
+
+这两个属性被所有浏览器支持，所以可以放心使用。
+
+    glow(color=00CCFF, strength=5);
+	color: #00ff00; /* #42ad4b */
+	font-weight: 900;
+    width: 0.7em;
+    word-break: break-all; 
+    overflow:hidden;
+    background-color: #075202;
+    text-shadow: 2px 2px 2px #00ff00;
+
+此处添加了 text-shadow 属性以便效果更加逼真。   
+text-shadow 属性向文本设置阴影，但是需要IE10以上版本才支持。    
+   
+    语法：text-shadow: h-shadow v-shadow blur color;   
+    注释：text-shadow 属性向文本添加一个或多个阴影。该属性是逗号分隔的阴影列表，每个阴影有两个或三个长度值和一个可选的颜色值进行规定。省略的长度是 0。   
+    h-shadow	必需。水平阴影的位置。允许负值。   
+    v-shadow	必需。垂直阴影的位置。允许负值。   
+    blur	可选。模糊的距离。   
+    color	可选。阴影的颜色。参阅 CSS 颜色值。   
+
+虽然部分IE浏览器不支持这个属性，但是还是有一些方法可以模拟出类似的效果，此处可以参考张鑫旭大哥的：[IE下实现类似CSS3 text-shadow文字阴影的几种方法](http://www.zhangxinxu.com/wordpress/2011/05/ie%E4%B8%8B%E5%AE%9E%E7%8E%B0%E7%B1%BB%E4%BC%BCcss3-text-shadow%E6%96%87%E5%AD%97%E9%98%B4%E5%BD%B1%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/)
+
+
+<div class="charRain">5g4sdf56</div>
+<style>
+.charRain {
+	color: #00ff00;
+	font-weight: 900;
+    width: 0.7em;
+    word-break: break-all; 
+    overflow:hidden;
+    background-color: #075202;
+    text-shadow: 2px 2px 2px #00ff00;
+    filter:progid:DXImageTransform.Microsoft.MotionBlur(strength=5, direction=145);
+}
+</style>
+
+
+第二问生成长度随机的随机包含 “[0-9][a-z][A-Z]” 的字符串。    
+这其中用到了两个随机的内容，一是长度的随机，二是字符的随机。   
+此时需要用到 Math 对象的 random() 方法。random() 方法可返回介于 0 ~ 1 之间的一个随机数。   
+random() 方法返回的是一个小数，我们此处需要的都是整数，此时就需要利用这个小数来构造整数，首先我们用 random() 乘上我们想取得的随机数的范围，然后再利用 Math 对象的 round()方法进行四舍五入的取整，就可以得到一定的随机数了。   
+例如从 “[0-9][a-z][A-Z]” 中随机取一个字符，可以先定义包含所有字符的字符串，然后随机取一个位置，采用 String 对象的 charAt()方法即可得到随机字符。
+   
+    var downSpeed = 1000; //下落速度设定
+    var generateSpeed = 10; //生成字符雨滴速度设定
+    function getRandom(len){
+    	return Math.round(Math.random()*len);
+    }
+    function randomString(){
+    	var chars ="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    	var charLen = chars.length;
+    	var result = "";
+    	var resultLen =  getRandom(100);
+    	for(var i = 0; i < resultLen; i++)
+    	{
+    		var index = getRandom(charLen);
+    		result += chars.charAt(index);
+    	}
+    	return result;
+    }
+
+添加到页面则只需要采用DOM操作改变DIV的文字即可。   
+
+第三问是实现页面中随机出现第二问中随机生成的字符串，并实现下落效果。   
+题目要求是从屏幕中随机的地方落下随机字符雨，并且下落速度也要随机。考试的时候首先想到采用 float 属性，后来实际做的时候才发现绝对定位最简单。整理了一下实现的思路如下：    
+1、首先随机生成字符串，然后用该字符串新建 div 元素， div 设置为绝对定位。   
+2、随机设置 div 元素的 left 和 top 属性，实现滑落起始位置随机。   
+3、并设置一个定时器，不停累加其 top ，以实现下落效果。累加的值随机取得，以实现下落速度的随机。    
+4、等下落出屏幕后就移除该div，以免浪费资源。   
+5、不停重复新建div的操作，以实现多个字符雨。   
+
+随机取值的实现，前面已经完成了，下面需要的就是新建 div 并添加到 body 的操作。
+首先用到的是 document.createElement() 方法，这个方法可以创建新元素，需要传入一个参数，即要创建的标签名，这个方法会返回创建好的元素。这个标签名在HTML文档中不区分大小写，但是在 XML（包括XHTML）文档中，都是区分大小写的。   
+创建完毕后就可以对新建的元素进行属性设置，在未添加到文档树之前，这些属性的更改都不会影响到浏览器的显示。要把新建的元素添加到文档树，可以使用 appendChild()、insertBefore()、或者replaceChild()。在IE中 createElement() 方法还可以传入完整的元素标签来创建新元素，并且可以包含属性。      
+创建文本节点可以使用 document.createTextNode() 方法，这个方法接收一个参数，即要插入节点中的文本。然后再使用 appendChild() 方法将新建的文本节点添加到新建的 div 节点中，将新建的 div 节点添加到 body 中，就实现了新建 div 并添加到页面中。此处需要注意的是最好是对新建元素的 DOM 操作都完成之后再将其添加到 body 。
+   
+    //新建div元素
+    var windowWidth = document.documentElement.clientWidth;
+    var windowHeight = document.documentElement.clientHeight;
+    var index = 0;
+    function charRain(){
+    	var newDiv = document.createElement("div");
+    	var newText = document.createTextNode(randomString());
+        newDiv.className = 'charRain';
+    	newDiv.style.top = -getRandom(windowHeight) + 'px';
+    	newDiv.style.left = getRandom(windowWidth) + 'px';
+    	newDiv.appendChild(newText);
+    	document.body.appendChild(newDiv);
+    	var speed = getRandom(downSpeed);
+    	setTimeout(function(){
+    		addMarginTop(newDiv, speed);
+    	}, 500);
+    }
+
+然后是滑落效果的实现，把生成的字符串元素设置为绝对定位以后，只要累加其 top 值即可实现滑落效果，只要随机生成不同字符串元素的累加值即可实现随机下落速度。当下落的高度已经超过屏幕高度时说明已经落到了屏幕的下方，此时即可移除元素，若没有落到屏幕下方，则按照原来的速度继续下落。
+
+    //滑落实现
+    function addMarginTop(element, speed){
+    	if (element.offsetTop > windowHeight){
+    		document.body.removeChild(element);
+    	} else {
+    		var start = new Number(element.style.top.split("px")[0]);
+    		var now = start + speed;
+    		element.style.top = now + 'px';
+    		setTimeout(function(){
+    			addMarginTop(element, speed);
+    			}, 500);
+    	}
+    }
+    setInterval(charRain, generateSpeed);
+
+此方案的实现，耗费的资源还是比较的多，有没有更优的方法还需要进行寻找。

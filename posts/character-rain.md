@@ -5,7 +5,7 @@ date: 2015/9/17 23:11:00
 
 今天在做大众点评的前端笔试题时，遇到了这个问题，让用HTML+CSS+JavaScript来实现黑客帝国中的字符雨效果，如下图：    
 
-![](http://attimg.dospy.com/img/day_091110/20091110_4221bebbbe02945c71e0BN5BE87s8TT7.gif)   
+![](https://blog.shawnan.xyz/images/rain.gif)   
 
 自己做了一个[demo](https://blog.shawnan.xyz/htmls/characterRainDemo.html)，顺便记录下这个实现过程。
 

@@ -1,6 +1,6 @@
 ---
 title: JavaScript对象构造函数及继承学习笔记
-date: 2015/9/11 23:11:00
+date: 2015/09/11 23:11:00
 tags: JavaScript
 ---
 为了加深自己对JavaScript的Object类型的理解，对这部分的内容整理了一些笔记，几乎完全是《JavaScript高级程序设计》的摘抄，仅仅是方便自己的学习。

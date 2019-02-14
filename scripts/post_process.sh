@@ -17,5 +17,5 @@ hexo clean
 hexo g
 
 rm -rf $HTML_PATH/blog/*
-cp $BLOG_SOURCE_PATH/public/* $HTML_PATH/blog/*
+cp $BLOG_SOURCE_PATH/public/* $HTML_PATH/blog
 

@@ -17,4 +17,4 @@ hexo clean
 hexo g
 
 rm -rf $HTML_PATH/blog/*
-cp -r $BLOG_SOURCE_PATH/public/* $HTML_PATH/blog
+rsync -av --delete $BLOG_SOURCE_PATH/public/ $HTML_PATH/blog/

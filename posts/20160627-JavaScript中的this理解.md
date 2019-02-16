@@ -12,6 +12,7 @@ date: 2016/06/27 23:11:00
     var name = "window";
     console.log(this.name); // window
 
+<!-- more -->
 ###    2、函数中，this指向函数的调用者。
 ##### 2.1、在作为对象的方法调用时，函数中的this指向调用对象。
 

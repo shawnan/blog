@@ -3,8 +3,6 @@ title: 如何在linux服务器上搭建node运行环境
 date: 2017/12/25 23:11:00
 ---
 
-# 如何在linux服务器上搭建node运行环境
-
 本篇文章以安装APP的server端为例，说明如何在linux系统搭建nodejs运行环境。
 
 ## 安装nodejs

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Shawnan</title>
+    <style>
+        canvas {
+            display: block;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+
+        var Magnetic = function () {
+
+        };
+
+        Magnetic.prototype = {
+            constructor: Magnetic,
+
+            init: function (width, height) {
+                this.canvasWidth = width ? width : window.innerWidth;
+                this.canvasHeight = height ? height : window.innerHeight;
+
+                this.canvasElement = document.getElementById("canvas");
+                this.canvasContext = this.canvasElement.getContext('2d');
+
+                if (!this.canvasElement || !this.canvasContext){
+                    console.error('no canvas element');
+                }
+
+                this.canvasElement.width = this.canvasWidth;
+                this.canvasElement.height = this.canvasHeight;
+                this.moving = false;
+                this.lastMouseDownTime = 0;
+                this.windowInnerWidth = window.innerWidth;
+                this.windowInnerHeight = window.innerHeight;
+                this.pointX = window.innerWidth - this.windowInnerWidth;
+                this.pointY = window.innerHeight - this.windowInnerHeight;
+                this.canvasElementX = window.innerWidth - this.canvasWidth;
+                this.canvasElementY = window.innerHeight - this.canvasHeight;
+                this.magnetArr = [];
+                this.colorIndex = 0;
+                this.particleArr = [];
+                this.particleColorArr = [{
+                    glowA: "rgba(0,200,250,0.3)",
+                    glowB: "rgba(0,200,250,0.0)",
+                    particleFill: "#ffffff",
+                    fadeFill: "rgba(22,22,22,.6)",
+                    useFade: true
+                }, { 
+                    glowA: "rgba(233,143,154,0.3)",
+                    glowB: "rgba(0,143,154,0.0)",
+                    particleFill: "#ffffff",
+                    fadeFill: "rgba(22,22,22,.6)",
+                    useFade: false
+                }, {
+                    glowA: "rgba(230,0,0,0.3)",
+                    glowB: "rgba(230,0,0,0.0)",
+                    particleFill: "#ffffff",
+                    fadeFill: "rgba(11,11,11,.6)",
+                    useFade: true
+                }, {
+                    glowA: "rgba(0,230,0,0.3)",
+                    glowB: "rgba(0,230,0,0.0)",
+                    particleFill: "rgba(0,230,0,0.7)",
+                    fadeFill: "rgba(22,22,22,.6)",
+                    useFade: true
+                }, {
+                    glowA: "rgba(0,0,0,0.3)",
+                    glowB: "rgba(0,0,0,0.0)",
+                    particleFill: "#333333",
+                    fadeFill: "rgba(255,255,255,.6)",
+                    useFade: true
+                }, {
+                    glowA: "rgba(0,0,0,0.0)",
+                    glowB: "rgba(0,0,0,0.0)",
+                    particleFill: "#333333",
+                    fadeFill: "rgba(255,255,255,.2)",
+                    useFade: true
+                }];
+
+                this.defaultMagnetCount = 8;
+                this.defaultParticleCount = 20;
+                this.defaultDistance = 300;
+
+                this.bindEvents();
+                this.initStars();
+            },
+
+            bindEvents: function () {
+                var _this = this;
+                this.canvasElement.addEventListener("mousedown", function(event){
+                    _this.mousedownEventHandler.call(_this, event)
+                }, false);
+                this.canvasElement.addEventListener("touchstart", function(event){
+                    _this.touchstartEventHandler.call(_this, event)
+                }, false);
+                document.addEventListener("mousemove", function(event){
+                    _this.mousemoveEventHandler.call(_this, event)
+                }, false);
+                document.addEventListener("touchmove", function(event){
+                    _this.touchmoveEventHandler.call(_this, event)
+                }, false);
+                document.addEventListener("mouseup", function(event){
+                    _this.mouseupEventAndTouchendEventHandler.call(_this, event)
+                }, false);
+                document.addEventListener("touchend", function(event){
+                    _this.mouseupEventAndTouchendEventHandler.call(_this, event)
+                }, false);
+                document.addEventListener("keydown", function(event){
+                    _this.keydownEventHandler.call(_this, event)
+                }, false);
+                window.addEventListener("resize", function(event){
+                    _this.resizeEventHandler.call(_this, event)
+                }, false);
+            },
+
+            initStars: function () {
+                var _this = this;
+
+                for (var i = 0; i < this.defaultMagnetCount; i++) {
+                    this.addOneStar({
+                        x: 150 + (this.windowInnerWidth - 300) * Math.random(),
+                        y: 150 + (this.windowInnerHeight - 300) * Math.random()
+                    });
+                }
+                
+                this.resizeEventHandler();
+                setInterval(function(){
+                    _this.particleMove.call(_this)
+                }, 1E3 / 30);
+            },
+
+            addOneStar: function (obj) {
+                var magnet = new Magnet();
+                magnet.position.x = obj.x;
+                magnet.position.y = obj.y;
+                this.magnetArr.push(magnet);
+                var position = magnet.position;
+                for (var i = 0; i < this.defaultParticleCount; i++) {
+                    var particle = new Particle();
+                    particle.position.x = position.x;
+                    particle.position.y = position.y;
+                    particle.shift.x = position.x;
+                    particle.shift.y = position.y;
+                    particle.color = this.particleColorArr[this.colorIndex].particleFill;
+                    this.particleArr.push(particle)
+                }
+            },
+
+            mousedownEventHandler: function (event) {
+                event.preventDefault();
+                this.mousedownOrTouchStartHandler();
+            },
+
+            touchstartEventHandler: function (event) {
+                if (event.touches.length == 1) {
+                    event.preventDefault();
+                    this.pointX = event.touches[0].pageX - (window.innerWidth - this.windowInnerWidth) * 0.5;
+                    this.pointY = event.touches[0].pageY - (window.innerHeight - this.windowInnerHeight) * 0.5;
+                    this.mousedownOrTouchStartHandler();
+                }
+            },
+
+            mousedownOrTouchStartHandler: function() {
+                let _this = this;
+                this.moving = true;
+
+                if ((new Date).getTime() - this.lastMouseDownTime < 300) {
+                    this.addOneStar({
+                        x: _this.pointX,
+                        y: _this.pointY
+                    });
+                    this.lastMouseDownTime = 0;
+                }
+
+                this.lastMouseDownTime = (new Date).getTime();
+                
+                for (var i = 0; i < this.magnetArr.length; i++) {
+                    // 找到是在移动哪一个磁铁，就把该磁铁标记为在拖拽
+                    magnet = this.magnetArr[i];
+                    if (distanceOfTwoPoint(magnet.position, { x: this.pointX, y: this.pointY }) < magnet.orbit * 0.5) {
+                        magnet.dragging = true;
+                        break;
+                    }
+                }
+            },
+
+            mousemoveEventHandler: function (event) { 
+                this.pointX = event.clientX - (window.innerWidth - this.canvasWidth) * 0.5;
+                this.pointY = event.clientY - (window.innerHeight - this.canvasHeight) * 0.5;
+            },
+
+            touchmoveEventHandler: function (event) {
+                if (event.touches.length !== 1) {
+                    return;
+                }
+
+
+                event.preventDefault();
+                this.pointX = event.touches[0].pageX - (window.innerWidth - this.canvasWidth) * 0.5;
+                this.pointY = event.touches[0].pageY - (window.innerHeight - this.canvasHeight) * 0.5
+            },
+
+            mouseupEventAndTouchendEventHandler: function(event) {
+                this.moving = false;
+                var magnet = null;
+
+                for (var i = 0; i < this.magnetArr.length; i++) {
+                    magnet = this.magnetArr[i];
+                    magnet.dragging = false;
+                }
+            },
+
+            keydownEventHandler: function(event) {
+                if (event.keyCode == 37) {
+                    this.changeColor(-1); 
+                } else if (event.keyCode == 39){
+                    this.changeColor(1);
+                }
+            },
+
+            changeColor: function (direct) {
+                this.colorIndex += direct;
+
+                if (this.colorIndex < 0){
+                    this.colorIndex = this.particleColorArr.length - 1;
+                }
+
+                if (this.colorIndex > this.particleColorArr.length - 1){
+                    this.colorIndex = 0;
+                }
+                
+                for (var i = 0; i < this.particleArr.length; i++) {
+                    this.particleArr[i].color = this.particleColorArr[this.colorIndex].particleFill;
+                }
+
+                console.log(this.colorIndex);
+            },
+
+            resizeEventHandler: function() {
+                this.canvasWidth = window.innerWidth;
+                this.canvasHeight = window.innerHeight;
+
+                this.canvasElement.width = this.canvasWidth;
+                this.canvasElement.height = this.canvasHeight;
+
+                this.canvasElementX = window.innerWidth - this.canvasWidth;
+                this.canvasElementY = window.innerHeight - this.canvasHeight;
+
+                this.canvasElement.style.left = this.canvasElementX + "px";
+                this.canvasElement.style.top = this.canvasElementY + "px";
+            },
+
+            particleMove: function() {
+                var colorArr = this.particleColorArr;
+                var index = this.colorIndex;
+                var context = this.canvasContext;
+                var canvasElement = this.canvasElement;
+                if (colorArr[index].useFade) {
+                    context.fillStyle = colorArr[index].fadeFill;
+                    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+                } else {
+                    context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                }
+
+                var magnetArr = this.magnetArr;
+                var magnetItem = null;
+                var x = 0;
+                var y = 0;
+                var removedMagnetIndex = -1;
+                var radialGradient = null;
+                for (var i = 0; i < magnetArr.length; i++) {
+                    magnetItem = magnetArr[i];
+                    x = magnetItem.position.x;
+                    y = magnetItem.position.y;
+
+                    if (magnetItem.dragging) {
+                        magnetItem.position.x += 0.2 * (this.pointX - x);
+                        magnetItem.position.y += 0.2 * (this.pointY - y);
+                    }  else if (x < 0 || y < 0 || x > this.canvasWidth || y > this.canvasHeight) {
+                        removedMagnetIndex = i;
+                    }
+
+                    magnetItem.size += (magnetItem.connections / 3 - magnetItem.size) * 0.05;
+                    magnetItem.size = Math.max(magnetItem.size, 2);
+
+                    radialGradient = context.createRadialGradient(x, y, 0, x, y, magnetItem.size * 10);
+                    radialGradient.addColorStop(0, colorArr[index].glowA);
+                    radialGradient.addColorStop(1, colorArr[index].glowB);
+                    context.beginPath();
+                    context.fillStyle = radialGradient;
+                    context.arc(x, y, magnetItem.size * 10, 0, Math.PI * 2, true);
+                    context.fill();
+                    context.beginPath();
+                    context.fillStyle = radialGradient;
+                    context.arc(x, y, magnetItem.size, 0, Math.PI * 2, true);
+                    context.fill();
+                    magnetItem.connections = 0;
+                }
+
+                if (removedMagnetIndex != -1 && magnetArr.length > 1) {
+                    magnetArr.splice(removedMagnetIndex, 1);
+                }
+                
+                var particleArr = this.particleArr;
+                var particleItem = null;
+                for (var j = 0; j < particleArr.length; j++) {
+                    particleItem = particleArr[j];
+                    var distanceOfMagnetAndParticle = -1;
+                    var pointerDistance = -1;
+                    var pointerMagnetObj = null;
+                    var point = {
+                        x: 0,
+                        y: 0
+                    };
+
+                    for (var k =0; k < magnetArr.length; k++) {
+                        magnetItem = magnetArr[k];
+                        distanceOfMagnetAndParticle = distanceOfTwoPoint(particleItem.position, magnetItem.position) - magnetItem.orbit * 0.5;
+                        if (particleItem.magnet != magnetItem) {
+                            var distance = magnetItem.position.x - particleItem.position.x;
+                            if (distance > -this.defaultDistance && distance < this.defaultDistance) {
+                                point.x += distance / this.defaultDistance;
+                            }
+
+                            distance = magnetItem.position.y - particleItem.position.y; // 重新以y计算了一次
+                            if (distance > -this.defaultDistance && distance < this.defaultDistance) {
+                                point.y += distance / this.defaultDistance;
+                            }
+                        }
+
+                        if (pointerMagnetObj == null || distanceOfMagnetAndParticle < pointerDistance){
+                            pointerMagnetObj = magnetItem;
+                            pointerDistance = distanceOfMagnetAndParticle;
+                        }
+                    }
+
+                    if (particleItem.magnet == null || particleItem != pointerMagnetObj) {
+                        particleItem.magnet = pointerMagnetObj;
+                    }
+
+                    pointerMagnetObj.connections += 1;
+                    particleItem.angle += particleItem.speed;
+                    particleItem.shift.x += (pointerMagnetObj.position.x + point.x * 6 - particleItem.shift.x) * particleItem.speed;
+                    particleItem.shift.y += (pointerMagnetObj.position.y + point.y * 6 - particleItem.shift.y) * particleItem.speed;
+                    particleItem.position.x = particleItem.shift.x + Math.cos(j + particleItem.angle) * particleItem.orbit * particleItem.force;
+                    particleItem.position.y = particleItem.shift.y + Math.sin(j + particleItem.angle) * particleItem.orbit * particleItem.force;
+                    particleItem.position.x = Math.max(Math.min(particleItem.position.x, this.canvasWidth - particleItem.size / 2), particleItem.size / 2);
+                    particleItem.position.y = Math.max(Math.min(particleItem.position.y, this.canvasHeight - particleItem.size / 2), particleItem.size / 2);
+                    particleItem.orbit += (pointerMagnetObj.orbit - particleItem.orbit) * 0.1;
+                    context.beginPath();
+                    context.fillStyle = particleItem.color;
+                    context.arc(particleItem.position.x, particleItem.position.y, particleItem.size / 2, 0, Math.PI * 2, true);
+                    context.fill();
+                }
+            }
+        }
+
+        function Particle() {
+            this.size = 0.5 + Math.random() * 3.5;
+            this.position = { x: 0, y: 0 };
+            this.shift = { x: 0, y: 0 };
+            this.angle = 0;
+            this.speed = 0.01 + this.size / 4 * 0.03;
+            this.force = 1 - Math.random() * 0.11;
+            this.color = "#ffffff";
+            this.orbit = 1;
+            this.magnet = null
+        }
+        function Magnet() {
+            this.orbit = 100;
+            this.position = { x: 0, y: 0 };
+            this.dragging = false;
+            this.connections = 0;
+            this.size = 1
+        }
+        function distanceOfTwoPoint(a, b) {
+            var c = b.x - a.x;
+            var d = b.y - a.y;
+            return Math.sqrt(c * c + d * d);
+        }
+
+        var magnetic = new Magnetic();
+        magnetic.init(500, 500);
+    </script>
+</body>
+
+</html>

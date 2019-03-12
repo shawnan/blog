@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>前端学习思维导图</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" >
-    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
     <link rel="stylesheet" href="../resources/kityminder.core.css" rel="stylesheet">
 
     <style type="text/css">
@@ -14,7 +13,7 @@
             height: 100%;
         }
 
-        .minder-view {
+        .km-view {
             position: absolute;
             border: 1px solid #ccc;
             left: 10px;
@@ -27,23 +26,40 @@
     <script type="text/javascript" src="../resources/kity.min.js"></script>
 </head>
 <body>
-    <script id="J_MinderView" class="minder-view" type="application/kityminder" minder-data-type="json">
+    <script id="MinderView" type="application/kityminder" minder-data-type="json">
     {
         "root": {
             "data": {
                 "text": "前端知识框架图"
             },
-            "children": [
-                { 
-                    "data": { "text": "JavaScript" },
-                    "children": { "text": "运行时"}
+            "children": [ { 
+                "data": {
+                    "text": "JavaScript"
                 },
-                { "data": { "text": "HTML"} },
-                { "data": { "text": "CSS" } },
-                { "data": { "text": "浏览器原理"} },
-                { "data": { "text": "浏览器API"} },
-                { "data": { "text": "前端工程化"} }
-            ]
+                "children": { 
+                    "text": "运行时"
+                }
+            }, {
+                "data": {
+                    "text": "HTML"
+                }
+            }, {
+                "data": {
+                    "text": "CSS"
+                }
+            }, {
+                "data": {
+                    "text": "浏览器原理"
+                }
+            }, {
+                "data": {
+                    "text": "浏览器API"
+                }
+            }, {
+                "data": {
+                    "text": "前端工程化"
+                }
+            }]
         }
     }
     </script>
@@ -54,7 +70,7 @@
     // 创建 km 实例
     /* global kityminder */
     var km = window.km = new kityminder.Minder();
-    km.setup('#J_MinderView');
+    km.setup('#MinderView');
     km.disable();
     km.execCommand('hand');
 </script>

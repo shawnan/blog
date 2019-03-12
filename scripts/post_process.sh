@@ -11,6 +11,8 @@ echo $BLOG_SOURCE_PATH  $HTML_PATH $NGINX_PATH
 
 # 放置nginx的首页
 cp -rf htmls/index.html $NGINX_PATH/html/nginx_index.html
+cp -rf htmls/frontend-mind-map.html $NGINX_PATH/html/mindmap.html
+cp -rf resources/* $NGINX_PATH/html/resources/
 
 rm -rf $BLOG_SOURCE_PATH/source/_posts/*
 cp -f ./posts/* $BLOG_SOURCE_PATH/source/_posts

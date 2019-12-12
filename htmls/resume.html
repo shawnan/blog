@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>简历</title>
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="J_Canvas"></canvas>
+    <script src="https://unpkg.com/spritejs/dist/spritejs.min.js"></script>
+    <script>
+        let screenWidth = window.screen.width;
+        let canvasWidth = screenWidth;
+        let canvasHeight = (canvasWidth / 210 * 297).toFixed(2) * 1;
+
+        let canvasElement = document.getElementById('J_Canvas');
+        canvasElement.width = canvasWidth - scrollbarWidth();
+        canvasElement.height = canvasHeight;
+
+        let ctx = canvasElement.getContext('2d');
+        ctx.fillStyle = '#1c1f1e';
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        ctx.font = "40px Microsoft YaHei";
+        ctx.textAlign = "center";
+        ctx.fillStyle = '#bababa';
+        ctx.fillText("陈潇男的个人简历", canvasWidth / 2, 70);
+
+        ctx.fillStyle = '#bababa';
+        ctx.fillRect(0, 400, canvasWidth, canvasHeight - 400);
+
+        ctx.fillStyle = '#adadad';
+        ctx.fillRect(0, 120, canvasWidth, 2);
+
+        ctx.fillStyle = '#1c1f1e';
+        ctx.fillRect(canvasWidth / 2 - 90, 120, 180, 2);
+
+        ctx.textAlign = "center";
+        ctx.font = "30px Microsoft YaHei";
+
+        ctx.fillStyle = '#adadad';
+        ctx.fillText("ABOUT ME", canvasWidth / 2, 132);
+
+        let arr = [{
+            img: 'user',
+            text: '姓名：陈潇男'
+        }, {
+            img: 'university',
+            text: '毕业院校：中南大学'
+        }, {
+            img: 'check-square-o',
+            text: '求职意向：前端开发工程师'
+        }, {
+            img: 'mars',
+            text: '性别：男'
+        }, {
+            img: 'graduation-cap',
+            text: '学历：硕士研究生'
+        }, {
+            img: 'phone',
+            text: '联系电话：17688700678'
+        }, {
+            img: 'birthdaycake',
+            text: '出生日期：1991.03.23'
+        }, {
+            img: 'desktop',
+            text: '专业：软件工程'
+        }, {
+            img: 'envelopeo',
+            text: '邮箱：shawnan.chen@gmail.com'
+        }];
+
+        arr.forEach(function(obj, i){
+            let col = Math.floor(i % 3);
+            let x = (col) * (canvasWidth / 3) + 100;
+            let y = 180 + Math.floor(i / 3) * 40;
+            console.log(i, x, y);
+            ctx.textAlign = "left";
+            ctx.font = "16px Microsoft YaHei";
+            ctx.fillStyle = '#adadad';
+            ctx.fillText(obj.text, x, y);
+            let img = new Image();
+            img.src = '../resources/images/' + obj.img + '.png';
+            document.body.append(img);
+            img.onload = function(){
+                ctx.drawImage(img, x - 25, y - 16, 18, 18);
+            };
+        });
+
+
+        function scrollbarWidth() {  
+            var w1, w2, outer,inner;
+            outer = document.createElement('div');
+            inner = document.createElement('div');
+            outer.appendChild(inner);
+
+            outer.style.display = 'block';
+            outer.style.position = 'absolute';
+            outer.style.width = '50px';
+            outer.style.height = '50px';
+            outer.style.overflow = 'hidden';
+
+            inner.style.height = '100px';
+            inner.style.width = 'auto';
+
+            document.body.appendChild(outer);
+
+            w1 = inner.offsetWidth;  
+            outer.style.overflow = 'scroll';  
+
+            w2 = inner.offsetWidth;  
+
+            if (w1 === w2) {  
+                w2 = outer.clientWidth;  
+            }  
+
+            document.body.removeChild(outer);
+            return w1 - w2;  
+        }
+    </script>
+</body>
+</html>

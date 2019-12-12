@@ -27,41 +27,7 @@
 </head>
 <body>
     <script id="MinderView" type="application/kityminder" minder-data-type="json">
-    {
-        "root": {
-            "data": {
-                "text": "前端知识框架图"
-            },
-            "children": [ { 
-                "data": {
-                    "text": "JavaScript"
-                },
-                "children": { 
-                    "text": "运行时"
-                }
-            }, {
-                "data": {
-                    "text": "HTML"
-                }
-            }, {
-                "data": {
-                    "text": "CSS"
-                }
-            }, {
-                "data": {
-                    "text": "浏览器原理"
-                }
-            }, {
-                "data": {
-                    "text": "浏览器API"
-                }
-            }, {
-                "data": {
-                    "text": "前端工程化"
-                }
-            }]
-        }
-    }
+    
     </script>
 </body>
 
@@ -69,8 +35,234 @@
 <script type="text/javascript">
     // 创建 km 实例
     /* global kityminder */
-    var km = window.km = new kityminder.Minder();
+    var km = window.km = new kityminder.Minder({
+    });
+    var target = document.querySelector("#MinderView");
+    km.renderTo(target);
     km.setup('#MinderView');
+
+    var jsonObj = {
+        text: "前端知识框架图",
+        children: [{
+            text: "JavaScript",
+            children: [{
+                text: "运行时",
+                children: [{
+                    text: "数据结构",
+                    children: [{
+                        text: "类型",
+                        children: [{
+                            text: "Undefined"
+                        }, {
+                            text: "NULL"
+                        }, {
+                            text: "Boolean"
+                        }, {
+                            text: "String"
+                        }, {
+                            text: "Number"
+                        }, {
+                            text: "Symbol"
+                        }, {
+                            text: "Object",
+                            children: [{
+                                text: "宿主对象"
+                            }, {
+                                text: "内置对象",
+                                children: [{
+                                    text: "固有对象"
+                                }, {
+                                    text: "原生对象"
+                                }, {
+                                    text: "普通对象"
+                                }]
+                            }]
+                        }]
+                    }, {
+                        text: "实例",
+                        children: [{
+                            text: "应用和机制"
+                        }]
+                    }]
+                }, {
+                    text: "执行过程（算法）",
+                    children: [{
+                        text: "事件循环"
+                    }, {
+                        text: "微任务的执行"
+                    }, {
+                        text: "函数的执行"
+                    }, {
+                        text: "语句级的执行"
+                    }]
+                }]
+            }, {
+                text: "文法",
+                children: [{
+                    text: "词法"
+                }, {
+                    text: "语法"
+                }]
+            }, {
+                text: "语义"
+            }]
+        }, {
+            text: "HTML"
+        }, {
+            text: "CSS",
+            children: [{
+                text: "at规则",
+                children: [{
+                    text: "@charset"
+                }, {
+                    text: "@import"
+                }, {
+                    text: "@media"
+                }, {
+                    text: "@page"
+                }, {
+                    text: "@counter-style"
+                }, {
+                    text: "@key-frames"
+                }, {
+                    text: "@fontface"
+                }, {
+                    text: "@support"
+                }, {
+                    text: "@namespace"
+                }, {
+                    text: "@viewport"
+                }]
+            }, {
+                text: "普通规则",
+                children: [{
+                    text: "选择器",
+                    children: [{
+                        text: "复杂选择器",
+                        children: [{
+                            text: "组合",
+                            children: [{
+                                text: "空格"
+                            }, {
+                                text: ">"
+                            }, {
+                                text: "+"
+                            }, {
+                                text: "~"
+                            }, {
+                                text: "||"
+                            }]
+                        }]
+                    }, {
+                        text: "复合选择器",
+                        children: [{
+                            text: "类型选择器"
+                        }, {
+                            text: "子类选择器",
+                            children: [{
+                                text: "id"
+                            }, {
+                                text: "class"
+                            }, {
+                                text: "attribute"
+                            }, {
+                                text: "伪类选择器"
+                            }]
+                        }, {
+                            text: "伪元素选择器"
+                        }]
+                    }]
+                }, {
+                    text: "声明列表",
+                    children: [{
+                        text: "属性",
+                        children: [{
+                            text: "中划线、下划线、字母等组成"
+                        }, {
+                            text: "两个中划线开头的是变量，与var配合使用"
+                        }]
+                    }, {
+                        text: "值",
+                        children: [{
+                            text: "值的类型",
+                            children: [{
+                                text: "CSS关键字"
+                            }, {
+                                text: "字符串"
+                            }, {
+                                text: "URL：比如url()函数"
+                            }, {
+                                text: "整数/实数：比如flex属性"
+                            }, {
+                                text: "维度：单位的整数或实数"
+                            }, {
+                                text: "百分比"
+                            }, {
+                                text: "颜色"
+                            }, {
+                                text: "2D位置"
+                            }, {
+                                text: "函数"
+                            }]
+                        }, {
+                            text: "函数",
+                            children: [{
+                                text: "calc()"
+                            }, {
+                                text: "max()"
+                            }, {
+                                text: "min()"
+                            }, {
+                                text: "clamp()"
+                            }, {
+                                text: "toggle()"
+                            }, {
+                                text: "attr()"
+                            }]
+                        }]
+                    }]
+                }]
+            }]
+        }, {
+            text: "浏览器原理"
+        }, {
+            text: "浏览器API"
+        }, {
+            text: "前端工程化"
+        }]
+    };
+    var result = {};
+
+    function parseJson(obj) {
+        if (obj instanceof Array) {
+            let childrenArr = [];
+            for (let i = 0; i < obj.length; i++){
+                childrenArr.push(parseJson(obj[i]));
+            }
+
+            return childrenArr;
+        } else {
+            let result = {};
+            for (let attr in obj){
+                if (attr === 'text'){
+                    result.data = {};
+                    result.data.text = obj.text;
+                }
+                
+                if (attr === 'children'){
+                    result.children = parseJson(obj.children);
+                }
+            }
+
+            return result;
+        }
+    }
+    
+    json = parseJson(jsonObj);
+    km.importData('json', JSON.stringify(json));
+    setTimeout(function(){
+        km.useTheme('wire');
+    }, 0);
     km.disable();
     km.execCommand('hand');
 </script>

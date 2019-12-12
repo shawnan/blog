@@ -59,11 +59,7 @@ Express的安装十分简单，其实就是使用npm将相应的包下载下来�
 
 ## MongoDB
 
-MongoDB的安装和配置是较为麻烦的一个，主要是因为涉及到了用户的配置，在用户行为研究的开发中，我们可能需要用到两个软件，一是MongoDB，二是一个图形化界面显示MongoDB数据的MongoDBCompass。这两个文件都比较大，我将其放到用户行为统计的服务器，方便大家下载安装。  
-MongoDB的下载链接为：[MongoDB Download](http://tongjitest.dataserver.cn/public/download/mongodb-win32-x86_64-enterprise-windows-64-3.2.10-signed.msi "MongoDB Download")  
-MongoDBCompass的下载链接为：[MongoDBCompass Download](http://tongjitest.dataserver.cn/public/download/mongodb-compass-1.4.0-win32-x64.exe "MongoDBCompass Download")  
-
-下载后分别进行安装，安装完毕后进行配置： 
+MongoDB的安装和配置是较为麻烦的一个，主要是因为涉及到了用户的配置，在用户行为研究的开发中，我们可能需要用到两个软件，一是MongoDB，二是一个图形化界面显示MongoDB数据的MongoDBCompass。大家可以自行下载安装包，下载后分别进行安装，安装完毕后进行配置： 
  
 ### 环境变量
 
